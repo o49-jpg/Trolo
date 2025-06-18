@@ -125,10 +125,17 @@ CreateButton("💀 R15 Reanimate", function()
         Message("R15 Reanimate", "Already active or dead.", 5)
         return
     end
+
     R15reanimated = true
-    getgenv().Reanimated = true
     getgenv().ReanimateType = "R15"
+    getgenv().Reanimated = false
+
+    lp.Character:BreakJoints()
+    lp.CharacterAdded:Wait()
+    task.wait(0.5)
+
     loadstring(game:HttpGet("https://pastebin.com/raw/R15ReanimateScript"))()
+    getgenv().Reanimated = true
 end)
 
 CreateButton("🧟‍♂️ R6 Reanimate", function()
@@ -136,15 +143,23 @@ CreateButton("🧟‍♂️ R6 Reanimate", function()
         Message("R6 Reanimate", "Already active or dead.", 5)
         return
     end
+
     R6reanimated = true
-    getgenv().Reanimated = true
     getgenv().ReanimateType = "R6"
-    local char = lp.Character or lp.CharacterAdded:Wait()
+    getgenv().Reanimated = false
+
+    lp.Character:BreakJoints()
+    lp.CharacterAdded:Wait()
+    task.wait(0.5)
+
+    local char = lp.Character
     local hum = char:FindFirstChildOfClass("Humanoid")
     if hum then
         game.ReplicatedStorage:WaitForChild("RagdollEvent"):FireServer()
         hum:ChangeState(Enum.HumanoidStateType.Dead)
     end
+
+    getgenv().Reanimated = true
 end)
 
 CreateButton("♻️ Reset Character", function()
