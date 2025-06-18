@@ -31,7 +31,10 @@ MainTab:CreateToggle({
     CurrentValue = false,
     Flag = "TicTacToeToggle",
     Callback = function(Value)
-        getgenv().TTTAutoPlay = Value
+        local s, e = pcall(function()
+            getgenv().TTTAutoPlay = Value
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -40,10 +43,13 @@ MainTab:CreateInput({
     PlaceholderText = "0.25",
     RemoveTextAfterFocusLost = true,
     Callback = function(Text)
-        local val = tonumber(Text)
-        if val then
-            getgenv().TTTDelay = val
-        end
+        local s, e = pcall(function()
+            local val = tonumber(Text)
+            if val then
+                getgenv().TTTDelay = val
+            end
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -52,9 +58,12 @@ MainTab:CreateDropdown({
     Options = {"First", "Second"},
     CurrentOption = "Second",
     Callback = function(Option)
-        getgenv().MoveOption = Option
-        getgenv().AIPlayer = nil
-        getgenv().Opponent = nil
+        local s, e = pcall(function()
+            getgenv().MoveOption = Option
+            getgenv().AIPlayer = nil
+            getgenv().Opponent = nil
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -62,21 +71,24 @@ MainTab:CreateToggle({
     Name = "Avoid Tool Abusers (Lag Protection)",
     CurrentValue = false,
     Callback = function(Value)
-        getgenv().AvoidLagToolss = Value
-        while Value and task.wait(1) do
-            for _, player in ipairs(game.Players:GetPlayers()) do
-                local bp = player:FindFirstChild("Backpack")
-                local char = player.Character
-                if bp then
-                    local tool = bp:FindFirstChild("Bloxilicious")
-                    if tool then tool:Destroy() end
-                end
-                if char then
-                    local tool = char:FindFirstChild("Bloxilicious")
-                    if tool then tool:Destroy() end
+        local s, e = pcall(function()
+            getgenv().AvoidLagToolss = Value
+            while Value and task.wait(1) do
+                for _, player in ipairs(game.Players:GetPlayers()) do
+                    local bp = player:FindFirstChild("Backpack")
+                    local char = player.Character
+                    if bp then
+                        local tool = bp:FindFirstChild("Bloxilicious")
+                        if tool then tool:Destroy() end
+                    end
+                    if char then
+                        local tool = char:FindFirstChild("Bloxilicious")
+                        if tool then tool:Destroy() end
+                    end
                 end
             end
-        end
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -88,10 +100,13 @@ PlayerTab:CreateSlider({
     Suffix = "Speed",
     CurrentValue = 16,
     Callback = function(Value)
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.WalkSpeed = Value
-        end
+        local s, e = pcall(function()
+            local char = game.Players.LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+                char.Humanoid.WalkSpeed = Value
+            end
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -99,14 +114,20 @@ PlayerTab:CreateSlider({
 ReanimateTab:CreateButton({
     Name = "R15 Reanimate",
     Callback = function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/R15ReanimateScript"))()
+        local s, e = pcall(function()
+            loadstring(game:HttpGet("https://pastebin.com/raw/R15ReanimateScript"))()
+        end)
+        if not s then warn(e) end
     end,
 })
 
 ReanimateTab:CreateButton({
     Name = "R6 Reanimate",
     Callback = function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/R6ReanimateScript"))()
+        local s, e = pcall(function()
+            loadstring(game:HttpGet("https://pastebin.com/raw/R6ReanimateScript"))()
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -116,9 +137,12 @@ VisualsTab:CreateToggle({
     CurrentValue = false,
     Flag = "PlayerESP",
     Callback = function(Value)
-        if Value then
-            loadstring(game:HttpGet("https://pastebin.com/raw/ESPSystem"))()
-        end
+        local s, e = pcall(function()
+            if Value then
+                loadstring(game:HttpGet("https://pastebin.com/raw/ESPSystem"))()
+            end
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -127,9 +151,12 @@ VisualsTab:CreateToggle({
     CurrentValue = false,
     Flag = "PlayerChams",
     Callback = function(Value)
-        if Value then
-            loadstring(game:HttpGet("https://pastebin.com/raw/ChamsSystem"))()
-        end
+        local s, e = pcall(function()
+            if Value then
+                loadstring(game:HttpGet("https://pastebin.com/raw/ChamsSystem"))()
+            end
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -140,8 +167,11 @@ EnvironmentTab:CreateSlider({
     Increment = 1,
     CurrentValue = 402,
     Callback = function(Value)
-        getgenv().PlatformSize = Value
-        loadstring(game:HttpGet("https://pastebin.com/raw/PlatformAdjuster"))()
+        local s, e = pcall(function()
+            getgenv().PlatformSize = Value
+            loadstring(game:HttpGet("https://pastebin.com/raw/PlatformAdjuster"))()
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -150,8 +180,11 @@ EnvironmentTab:CreateDropdown({
     Options = {"Original", "Nothing"},
     CurrentOption = "Original",
     Callback = function(Option)
-        getgenv().EnvironmentTheme = Option
-        loadstring(game:HttpGet("https://pastebin.com/raw/PlatformThemes"))()
+        local s, e = pcall(function()
+            getgenv().EnvironmentTheme = Option
+            loadstring(game:HttpGet("https://pastebin.com/raw/PlatformThemes"))()
+        end)
+        if not s then warn(e) end
     end,
 })
 
@@ -159,14 +192,20 @@ EnvironmentTab:CreateDropdown({
 UniversalTab:CreateButton({
     Name = "Infinite Yield",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        local s, e = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        end)
+        if not s then warn(e) end
     end,
 })
 
 UniversalTab:CreateButton({
     Name = "Universal Emotes",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/LmaoItsCrazyBro/qweytguqwebuqt/refs/heads/main/marked_esp_system_ai"))()
+        local s, e = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/LmaoItsCrazyBro/qweytguqwebuqt/refs/heads/main/marked_esp_system_ai"))()
+        end)
+        if not s then warn(e) end
     end,
 })
 
