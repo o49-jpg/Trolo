@@ -1,219 +1,185 @@
---// Rayfield Setup
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+--// Sleek & Enhanced Haxter GUI v2
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+local Mouse = lp:GetMouse()
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Gui = Instance.new("ScreenGui", lp:WaitForChild("PlayerGui"))
+Gui.Name = "HaxterGUI"
+Gui.ResetOnSpawn = false
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
---// Create Window
-local Window = Rayfield:CreateWindow({
-   Name = "HaxterHub V6",
-   LoadingTitle = "HaxterHub V6",
-   LoadingSubtitle = "by Felix",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- leave nil to use default
-      FileName = "HaxterHubConfig"
-   },
-   Discord = {
-      Enabled = false,
-   },
-   KeySystem = false,
-})
+--// Main Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 600, 0, 400)
+Frame.Position = UDim2.new(0.5, -300, 0.5, -200)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = false
+Frame.Parent = Gui
 
---// Tabs
-local MainTab = Window:CreateTab("Main", 4483362458)
-local PlayerTab = Window:CreateTab("Player", 4483362458)
-local ReanimateTab = Window:CreateTab("Reanimate", 4483362458)
-local VisualsTab = Window:CreateTab("Visuals", 4483362458)
-local EnvironmentTab = Window:CreateTab("Environment", 4483362458)
-local UniversalTab = Window:CreateTab("Universal", 4483362458)
+local DragToggle, DragInput, DragStart, StartPos
+local function MakeDraggable(frame)
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            DragToggle = true
+            DragStart = input.Position
+            StartPos = frame.Position
 
---// Main Tab: Tic Tac Toe Toggle
-MainTab:CreateToggle({
-    Name = "Tic Tac Toe Auto Play",
-    CurrentValue = false,
-    Flag = "TicTacToeToggle",
-    Callback = function(Value)
-        local s, e = pcall(function()
-            getgenv().TTTAutoPlay = Value
-        end)
-        if not s then warn(e) end
-    end,
-})
-
-MainTab:CreateInput({
-    Name = "Move Delay (Seconds)",
-    PlaceholderText = "0.25",
-    RemoveTextAfterFocusLost = true,
-    Callback = function(Text)
-        local s, e = pcall(function()
-            local val = tonumber(Text)
-            if val then
-                getgenv().TTTDelay = val
-            end
-        end)
-        if not s then warn(e) end
-    end,
-})
-
-MainTab:CreateDropdown({
-    Name = "Move Option",
-    Options = {"First", "Second"},
-    CurrentOption = "Second",
-    Callback = function(Option)
-        local s, e = pcall(function()
-            getgenv().MoveOption = Option
-            getgenv().AIPlayer = nil
-            getgenv().Opponent = nil
-        end)
-        if not s then warn(e) end
-    end,
-})
-
-MainTab:CreateToggle({
-    Name = "Avoid Tool Abusers (Lag Protection)",
-    CurrentValue = false,
-    Callback = function(Value)
-        local s, e = pcall(function()
-            getgenv().AvoidLagToolss = Value
-            while Value and task.wait(1) do
-                for _, player in ipairs(game.Players:GetPlayers()) do
-                    local bp = player:FindFirstChild("Backpack")
-                    local char = player.Character
-                    if bp then
-                        local tool = bp:FindFirstChild("Bloxilicious")
-                        if tool then tool:Destroy() end
-                    end
-                    if char then
-                        local tool = char:FindFirstChild("Bloxilicious")
-                        if tool then tool:Destroy() end
-                    end
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    DragToggle = false
                 end
-            end
-        end)
-        if not s then warn(e) end
-    end,
-})
+            end)
+        end
+    end)
 
---// Player Tab: Walkspeed
-PlayerTab:CreateSlider({
-    Name = "Walk Speed",
-    Range = {1, 100},
-    Increment = 1,
-    Suffix = "Speed",
-    CurrentValue = 16,
-    Callback = function(Value)
-        local s, e = pcall(function()
-            local char = game.Players.LocalPlayer.Character
-            if char and char:FindFirstChild("Humanoid") then
-                char.Humanoid.WalkSpeed = Value
-            end
-        end)
-        if not s then warn(e) end
-    end,
-})
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+            DragInput = input
+        end
+    end)
 
---// Reanimate Tab: Buttons
-ReanimateTab:CreateButton({
-    Name = "R15 Reanimate",
-    Callback = function()
-        local s, e = pcall(function()
-            getgenv().ReanimateType = "R15"
-            getgenv().Reanimated = false
-            loadstring(game:HttpGet("https://pastebin.com/raw/R15ReanimateScript"))()
-            getgenv().Reanimated = true
-        end)
-        if not s then warn(e) end
-    end,
-})
+    UIS.InputChanged:Connect(function(input)
+        if input == DragInput and DragToggle then
+            local delta = input.Position - DragStart
+            frame.Position = UDim2.new(
+                StartPos.X.Scale,
+                StartPos.X.Offset + delta.X,
+                StartPos.Y.Scale,
+                StartPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
 
-ReanimateTab:CreateButton({
-    Name = "R6 Reanimate",
-    Callback = function()
-        local s, e = pcall(function()
-            getgenv().ReanimateType = "R6"
-            getgenv().Reanimated = false
-            loadstring(game:HttpGet("https://pastebin.com/raw/R6ReanimateScript"))()
-            getgenv().Reanimated = true
-        end)
-        if not s then warn(e) end
-    end,
-})
+MakeDraggable(Frame)
 
---// Visuals Tab: ESP
-VisualsTab:CreateToggle({
-    Name = "Player ESP",
-    CurrentValue = false,
-    Flag = "PlayerESP",
-    Callback = function(Value)
-        local s, e = pcall(function()
-            if Value then
-                loadstring(game:HttpGet("https://pastebin.com/raw/ESPSystem"))()
-            end
-        end)
-        if not s then warn(e) end
-    end,
-})
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 10)
+FrameCorner.Parent = Frame
 
-VisualsTab:CreateToggle({
-    Name = "Player Chams",
-    CurrentValue = false,
-    Flag = "PlayerChams",
-    Callback = function(Value)
-        local s, e = pcall(function()
-            if Value then
-                loadstring(game:HttpGet("https://pastebin.com/raw/ChamsSystem"))()
-            end
-        end)
-        if not s then warn(e) end
-    end,
-})
+--// Title Bar
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "Haxter Hub v2 - Enhanced"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 20
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Frame
 
---// Environment Tab: Platform + Theme
-EnvironmentTab:CreateSlider({
-    Name = "Platform Size",
-    Range = {402, 50000},
-    Increment = 1,
-    CurrentValue = 402,
-    Callback = function(Value)
-        local s, e = pcall(function()
-            getgenv().PlatformSize = Value
-            loadstring(game:HttpGet("https://pastebin.com/raw/PlatformAdjuster"))()
-        end)
-        if not s then warn(e) end
-    end,
-})
+--// UI Layout
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size = UDim2.new(1, -20, 1, -60)
+Scroll.Position = UDim2.new(0, 10, 0, 50)
+Scroll.CanvasSize = UDim2.new(0, 0, 5, 0)
+Scroll.BackgroundTransparency = 1
+Scroll.ScrollBarThickness = 6
+Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+Scroll.Parent = Frame
 
-EnvironmentTab:CreateDropdown({
-    Name = "Environment Theme",
-    Options = {"Original", "Nothing"},
-    CurrentOption = "Original",
-    Callback = function(Option)
-        local s, e = pcall(function()
-            getgenv().EnvironmentTheme = Option
-            loadstring(game:HttpGet("https://pastebin.com/raw/PlatformThemes"))()
-        end)
-        if not s then warn(e) end
-    end,
-})
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.FillDirection = Enum.FillDirection.Vertical
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 6)
+UIListLayout.Parent = Scroll
 
---// Universal Tab: Yield & Emotes
-UniversalTab:CreateButton({
-    Name = "Infinite Yield",
-    Callback = function()
-        local s, e = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-        end)
-        if not s then warn(e) end
-    end,
-})
+--// Utility: Message Function
+local function Message(title, text, time)
+    print("[" .. title .. "] " .. text)
+end
 
-UniversalTab:CreateButton({
-    Name = "Universal Emotes",
-    Callback = function()
-        local s, e = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/LmaoItsCrazyBro/qweytguqwebuqt/refs/heads/main/marked_esp_system_ai"))()
-        end)
-        if not s then warn(e) end
-    end,
-})
+--// Globals
+getgenv().Reanimated = false
+getgenv().ReanimateType = nil
+local R15reanimated = false
+local R6reanimated = false
 
--- Load saved settings
-Rayfield:LoadConfiguration()
+--// Button Creator
+local function CreateButton(text, callback)
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(1, -4, 0, 38)
+    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.GothamSemibold
+    Button.TextSize = 14
+    Button.AutoButtonColor = true
+    Button.Parent = Scroll
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 6)
+    UICorner.Parent = Button
+
+    Button.MouseButton1Click:Connect(function()
+        local success, err = pcall(callback)
+        if not success then warn("[Button Error]", err) end
+    end)
+end
+
+--// Buttons
+CreateButton("💀 R15 Reanimate", function()
+    if R15reanimated or lp.Character.Humanoid.Health == 0 then
+        Message("R15 Reanimate", "Already active or dead.", 5)
+        return
+    end
+    R15reanimated = true
+    getgenv().Reanimated = true
+    getgenv().ReanimateType = "R15"
+    loadstring(game:HttpGet("https://pastebin.com/raw/R15ReanimateScript"))()
+end)
+
+CreateButton("🧟‍♂️ R6 Reanimate", function()
+    if R6reanimated or lp.Character.Humanoid.Health == 0 then
+        Message("R6 Reanimate", "Already active or dead.", 5)
+        return
+    end
+    R6reanimated = true
+    getgenv().Reanimated = true
+    getgenv().ReanimateType = "R6"
+    local char = lp.Character or lp.CharacterAdded:Wait()
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        game.ReplicatedStorage:WaitForChild("RagdollEvent"):FireServer()
+        hum:ChangeState(Enum.HumanoidStateType.Dead)
+    end
+end)
+
+CreateButton("♻️ Reset Character", function()
+    lp.Character:BreakJoints()
+end)
+
+CreateButton("🧠 Reanimate Type Check", function()
+    Message("ReanimateType", tostring(getgenv().ReanimateType or "None"), 3)
+end)
+
+CreateButton("🧼 Clean Tools", function()
+    for _,v in pairs(lp.Backpack:GetChildren()) do
+        if v:IsA("Tool") then v:Destroy() end
+    end
+end)
+
+CreateButton("👁 ESP (Basic)", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/ESPSystem"))()
+end)
+
+CreateButton("🚀 Infinite Yield", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
+CreateButton("🎭 Universal Emotes", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/LmaoItsCrazyBro/qweytguqwebuqt/refs/heads/main/marked_esp_system_ai"))()
+end)
+
+--// GUI Toggle
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        Gui.Enabled = not Gui.Enabled
+    end
+end)
+
+--// Notes:
+-- Drag support now works for both desktop and mobile users!
